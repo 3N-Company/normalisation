@@ -54,18 +54,25 @@ def remove_outliers(data):
 
     df['score'] = ~(df.isnull().any(axis=1))
     frame_to_send = df[['user','score']]
-
-
+    mean_values = df[(df['latitude'].notna() )& (df['longitude'].notna() )][['latitude','longitude']]
+    # framedf[(df['latitude'].notna()) & (df['longitude'].notna())][['latitude', 'longitude']]
+    reply, mean = {}, {}
+    reply["mean"] = mean
+    mean['latitude'] = mean_values[['latitude']].mean().tolist()[0]
+    mean['longitude'] = mean_values[['longitude']].mean().tolist()[0]
     recommend_json = frame_to_send.to_json(orient='records', force_ascii=False)
-    recommend_json_with_slashes = json.dumps(json.loads(recommend_json), ensure_ascii=False).encode('utf8')
+    reply['user'] = json.loads(recommend_json)
+
+
+    recommend_json_with_slashes = json.dumps(reply, ensure_ascii=False).encode('utf8')
     return recommend_json_with_slashes
 
 
 @app.route('/normalise', methods=['POST'])
 def main():
     data = request.get_json()
-    if len(data) > 1:
-        ret = remove_outliers(data)
+    # if len(data) > 1:
+    ret = remove_outliers(data)
 
     return ret
 
