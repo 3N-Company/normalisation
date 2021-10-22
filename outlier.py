@@ -2,12 +2,13 @@ import pandas as pd
 from typing import Tuple
 import numpy as np
 
+
 class SmallUser:
     def __init__(self, data):
         self.user = data['user']["id"]
         self.latitude = float(data['metadata']["position"]['latitude'])
         self.longitude = float(data['metadata']["position"]['longitude'])
-        self.score = 0
+        self.score = False
 
         # self.username = data['user']["username"]
         # self.role = data['user']["role"]
@@ -16,6 +17,7 @@ class SmallUser:
         # self.proposed_name = data['metadata']['name']
         # self.photo_year = data['metadata']['photoYear']
 
+
 class Normalisation:
     def __init__(self):
         self.user_array = []
@@ -23,7 +25,8 @@ class Normalisation:
         self.longitude_array = []
         self.score_array = []
 
-    def iqr_lower_uperbound_calculation(self, frame:pd.DataFrame, column:str)-> Tuple[float,float]:
+    @staticmethod
+    def iqr_lower_uperbound_calculation(frame: pd.DataFrame, column: str) -> Tuple[float, float]:
         '''
         Calculation of the
         :param frame:
@@ -32,16 +35,13 @@ class Normalisation:
         # since we do the quantile over many columns we want only the temperature
         # column having back -> therefore [0]
         # https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.quantile.html
-        # iqr = frame.quantile(0.75)[0] - frame.quantile(0.25)[0]
-        # iqr = frame[["latitude", "longitude"]].quantile(0.75) - frame[["latitude", "longitude"]].quantile(0.25)
-        # upper_bound = frame[["latitude", "longitude"]].quantile(0.75)[0] + 1.5 * iqr
-        # lower_bound = frame[["latitude", "longitude"]].quantile(0.25)[0] - 1.5 * iqr
         iqr = frame[[column]].quantile(0.75)[0] - frame[[column]].quantile(0.25)[0]
         upper_bound = frame[[column]].quantile(0.75)[0] + 1.5 * iqr
         lower_bound = frame[[column]].quantile(0.25)[0] - 1.5 * iqr
         return upper_bound, lower_bound
 
-    def zscore(self, value:float, mean_frame:float, stand_deviation_frame:float) -> float:
+    @staticmethod
+    def zscore(value: float, mean_frame: float, stand_deviation_frame: float) -> float:
         """
         performs the zscore calculation
         :param value: single temperature value
@@ -59,8 +59,9 @@ class Normalisation:
         :return:
         """
         pass
+
     @staticmethod
-    def lqr_help_func( x: float, upper_bound: float, lower_bound: float) -> float:
+    def lqr_help_func(x: float, upper_bound: float, lower_bound: float) -> float:
         # performs the evaluation of the lqr
         if x < lower_bound or x > upper_bound:
             print('found NaN IQR')
@@ -68,3 +69,11 @@ class Normalisation:
             return x_new
         else:
             return x
+
+
+    def process_zscore(self, frame: pd.DataFrame, column_name: str):
+        # pandas function for standard deviation
+        stand_deviation_frame = frame[column_name].std(skipna=True)
+        mean_frame = frame[column_name].mean()
+        frame[column_name] = frame[column_name].map(lambda x: self.zscore(x, mean_frame, stand_deviation_frame))
+        return frame
