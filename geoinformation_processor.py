@@ -25,14 +25,6 @@ def provide_score_for_user(self):
     pass
 
 
-def iqr_outliers():
-    pass
-
-
-
-
-
-
 def remove_outliers(data):
     annotation_list = []
     normalis = Normalisation()
@@ -61,7 +53,10 @@ def remove_outliers(data):
     df['longitude'] = df['longitude'].map(lambda x: normalis.lqr_help_func(x, upper_bound_long, lower_bound_long))
 
     df['score'] = ~(df.isnull().any(axis=1))
-    recommend_json = df.to_json(orient="index", force_ascii=False)
+    frame_to_send = df[['user','score']]
+
+
+    recommend_json = frame_to_send.to_json(orient='records', force_ascii=False)
     recommend_json_with_slashes = json.dumps(json.loads(recommend_json), ensure_ascii=False).encode('utf8')
     return recommend_json_with_slashes
 
