@@ -5,7 +5,7 @@ import numpy as np
 
 class SmallUser:
     def __init__(self, data):
-        self.user = data['user']["id"]
+        self.id = data['user']["id"]
         self.latitude = float(data['metadata']["position"]['latitude'])
         self.longitude = float(data['metadata']["position"]['longitude'])
         self.score = False

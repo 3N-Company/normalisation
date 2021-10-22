@@ -32,12 +32,12 @@ def remove_outliers(data):
 
     for elem in data:
         user_data = SmallUser(elem)
-        normalis.user_array.append(user_data.user)
+        normalis.user_array.append(user_data.id)
         normalis.latitude_array.append(user_data.latitude)
         normalis.longitude_array.append(user_data.longitude)
         normalis.score_array.append(user_data.score)
 
-    d = {'user': normalis.user_array, 'latitude': normalis.latitude_array, "longitude":normalis.longitude_array,
+    d = {'id': normalis.user_array, 'latitude': normalis.latitude_array, "longitude":normalis.longitude_array,
          "score":normalis.score_array}
     df = pd.DataFrame(data=d)
 
@@ -53,7 +53,7 @@ def remove_outliers(data):
     df['longitude'] = df['longitude'].map(lambda x: normalis.lqr_help_func(x, upper_bound_long, lower_bound_long))
 
     df['score'] = ~(df.isnull().any(axis=1))
-    frame_to_send = df[['user','score']]
+    frame_to_send = df[['id','score']]
     mean_values = df[(df['latitude'].notna() )& (df['longitude'].notna() )][['latitude','longitude']]
     # framedf[(df['latitude'].notna()) & (df['longitude'].notna())][['latitude', 'longitude']]
     reply, mean = {}, {}
