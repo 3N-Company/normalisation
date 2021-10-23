@@ -58,8 +58,8 @@ def remove_outliers(data):
     # framedf[(df['latitude'].notna()) & (df['longitude'].notna())][['latitude', 'longitude']]
     reply, mean = {}, {}
     reply["mean"] = mean
-    mean['latitude'] = mean_values[['latitude']].mean().tolist()[0]
-    mean['longitude'] = mean_values[['longitude']].mean().tolist()[0]
+    mean['latitude'] = str(mean_values[['latitude']].mean().tolist()[0])
+    mean['longitude'] = str(mean_values[['longitude']].mean().tolist()[0])
     recommend_json = frame_to_send.to_json(orient='records', force_ascii=False)
     reply['user'] = json.loads(recommend_json)
 
