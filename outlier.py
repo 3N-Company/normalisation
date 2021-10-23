@@ -6,8 +6,8 @@ import numpy as np
 class SmallUser:
     def __init__(self, data):
         self.id = data['user']["id"]
-        self.latitude = float(data['metadata']["position"]['latitude'])
-        self.longitude = float(data['metadata']["position"]['longitude'])
+        self.latitude = float(data['metadata']["position"]['latitude']) # test on empty string
+        self.longitude = float(data['metadata']["position"]['longitude']) # test on empty string
         self.score = False
 
         # self.username = data['user']["username"]
